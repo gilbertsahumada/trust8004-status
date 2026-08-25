@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>trust8004 Status</title>
+<meta name="description" content="Real-time uptime for trust8004.xyz and its APIs, including the x402 pay-per-call API.">
+<link rel="icon" href="https://trust8004.xyz/favicon.ico">
+<style>
+  :root {
+    --ground: #f5f4f0;
+    --card: #ffffff;
+    --line: #e4e2dc;
+    --text: #1b1e23;
+    --muted: #6f7680;
+    --faint: #9aa0a8;
+    --green: #2fbf71;
+    --amber: #e8b73d;
+    --orange: #ee8244;
+    --red: #df4b47;
+    --nodata: #dcdad4;
+    --link: #5457d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #101318;
+      --card: #171b22;
+      --line: #262b34;
+      --text: #e7eaf0;
+      --muted: #9aa2ae;
+      --faint: #6a7280;
+      --nodata: #2c313b;
+      --link: #8b8ef2;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--ground);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 20px 64px; }
+
+  header { display: flex; align-items: center; gap: 12px; padding: 30px 0 8px; }
+  .mark {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    background: linear-gradient(135deg, #6366f1, #10b981);
+    display: grid; place-items: center;
+    color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .brand { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand span { color: var(--muted); font-weight: 500; }
+  header nav { margin-left: auto; display: flex; gap: 18px; font-size: 13px; }
+  header nav a { color: var(--muted); text-decoration: none; }
+  header nav a:hover, header nav a:focus-visible { color: var(--text); }
+  a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 2px; }
+
+  .banner {
+    margin-top: 22px; padding: 16px 20px; border-radius: 8px;
+    background: var(--green); color: #fff;
+    font-size: 18px; font-weight: 600;
+  }
+  .banner.down { background: var(--red); }
+  .banner.degraded { background: var(--amber); color: #2a2410; }
+
+  .meta-row {
+    display: flex; justify-content: flex-end; align-items: baseline; gap: 6px;
+    margin: 26px 2px 8px; font-size: 13px; color: var(--muted);
+  }
+  .meta-row b { color: var(--text); font-weight: 600; }
+
+  .services { border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .service { padding: 20px 24px 16px; }
+  .service + .service { border-top: 1px solid var(--line); }
+  .svc-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .svc-top h2 { font-size: 15.5px; font-weight: 700; }
+  .svc-top .url { font-size: 12px; color: var(--faint); text-decoration: none; }
+  .svc-top .url:hover { color: var(--muted); }
+  .state { margin-left: auto; font-size: 14px; font-weight: 600; }
+  .state.up { color: var(--green); }
+  .state.down { color: var(--red); }
+  .state.degraded { color: var(--amber); }
+
+  .bars { display: flex; gap: 3px; margin-top: 12px; height: 34px; }
+  .day { flex: 1; border-radius: 2px; min-width: 0; position: relative; }
+  .day:hover::after, .day:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    background: var(--text); color: var(--ground);
+    font-size: 11.5px; font-weight: 500; white-space: nowrap;
+    padding: 5px 9px; border-radius: 6px; z-index: 10; pointer-events: none;
+  }
+  .svc-scale {
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 10px; font-size: 12.5px; color: var(--faint);
+  }
+  .svc-scale .rule { flex: 1; height: 1px; background: var(--line); }
+  .svc-scale .pct { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .section-title { margin: 44px 0 14px; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .incidents { display: flex; flex-direction: column; gap: 10px; }
+  .incident {
+    border: 1px solid var(--line); border-radius: 10px; background: var(--card);
+    padding: 14px 18px;
+  }
+  .incident .head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .incident .head a { color: var(--text); font-weight: 600; font-size: 14.5px; text-decoration: none; }
+  .incident .head a:hover { color: var(--link); }
+  .chip { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
+  .chip.resolved { color: var(--green); background: color-mix(in srgb, var(--green) 14%, transparent); }
+  .chip.open { color: var(--red); background: color-mix(in srgb, var(--red) 14%, transparent); }
+  .incident .dates { font-size: 12.5px; color: var(--faint); margin-top: 2px; }
+  .empty { color: var(--muted); font-size: 14px; border: 1px dashed var(--line); border-radius: 10px; padding: 16px 18px; }
+
+  footer {
+    margin-top: 52px; padding-top: 16px; border-top: 1px solid var(--line);
+    display: flex; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--faint);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+  footer .right { margin-left: auto; }
+
+  #error { display: none; margin-top: 24px; }
+  @media (max-width: 560px) {
+    .bars { gap: 2px; }
+    header nav { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .banner { transition: background 0.3s; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark" aria-hidden="true">t8</div>
+    <div class="brand">trust8004 <span>status</span></div>
+    <nav aria-label="Links">
+      <a href="https://trust8004.xyz">trust8004.xyz</a>
+      <a href="https://trust8004.xyz/docs/paid-api.md">API docs</a>
+      <a href="https://github.com/gilbertsahumada/trust8004-status">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="banner" id="banner" role="status">Loading current status…</div>
+
+  <div class="meta-row"><span>Uptime over the past <b>90 days</b>.</span><span>Checked every 5 minutes.</span></div>
+
+  <div class="services" id="services" aria-live="polite"></div>
+
+  <h2 class="section-title">Past incidents</h2>
+  <div class="incidents" id="incidents"><div class="empty">Loading incidents…</div></div>
+
+  <div class="empty" id="error">Live data could not be loaded right now. See the
+    <a href="https://github.com/gilbertsahumada/trust8004-status">raw monitor data on GitHub</a>.</div>
+
+  <footer>
+    <span>Monitored with <a href="https://upptime.js.org">Upptime</a> · data updates every 5 minutes via GitHub Actions</span>
+    <span class="right"><a href="https://github.com/gilbertsahumada/trust8004-status/issues">Incident history</a></span>
+  </footer>
+</div>
+
+<script>
+const REPO = 'gilbertsahumada/trust8004-status'
+const RAW = `https://raw.githubusercontent.com/${REPO}/master`
+const MONITORING_SINCE = new Date('2026-08-25T00:00:00Z')
+const DAYS = 90
+
+const dayKey = (d) => d.toISOString().slice(0, 10)
+const fmtDay = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+
+function colorFor(minutesDown, beforeMonitoring) {
+  if (beforeMonitoring) return { c: 'var(--nodata)', label: 'No data' }
+  if (!minutesDown) return { c: 'var(--green)', label: 'Operational' }
+  if (minutesDown <= 30) return { c: 'var(--amber)', label: `${minutesDown} min down` }
+  if (minutesDown <= 120) return { c: 'var(--orange)', label: `${minutesDown} min down` }
+  return { c: 'var(--red)', label: `${minutesDown} min down` }
+}
+
+function stateFor(status) {
+  if (status === 'up') return { cls: 'up', label: 'Operational' }
+  if (status === 'degraded') return { cls: 'degraded', label: 'Degraded performance' }
+  return { cls: 'down', label: 'Major outage' }
+}
+
+function renderService(site) {
+  const daily = {}
+  for (const [k, v] of Object.entries(site.dailyMinutesDown || {})) daily[k.slice(0, 10)] = v
+
+  const today = new Date()
+  let bars = ''
+  for (let i = DAYS - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - i))
+    const before = d < MONITORING_SINCE
+    const { c, label } = colorFor(daily[dayKey(d)] || 0, before)
+    bars += `<div class="day" tabindex="0" style="background:${c}" data-tip="${fmtDay(d)} — ${label}"></div>`
+  }
+
+  const st = stateFor(site.status)
+  return `
+  <div class="service">
+    <div class="svc-top">
+      <h2>${site.name}</h2>
+      <a class="url" href="${site.url}">${site.url.replace('https://', '')}</a>
+      <span class="state ${st.cls}">${st.label}</span>
+    </div>
+    <div class="bars">${bars}</div>
+    <div class="svc-scale">
+      <span>90 days ago</span><span class="rule"></span>
+      <span class="pct">${site.uptime} uptime · ${site.time} ms avg</span>
+      <span class="rule"></span><span>Today</span>
+    </div>
+  </div>`
+}
+
+function renderBanner(sites) {
+  const banner = document.getElementById('banner')
+  if (sites.some(s => s.status === 'down')) {
+    banner.className = 'banner down'
+    banner.textContent = 'Some systems are experiencing an outage'
+  } else if (sites.some(s => s.status === 'degraded')) {
+    banner.className = 'banner degraded'
+    banner.textContent = 'Some systems have degraded performance'
+  } else {
+    banner.className = 'banner'
+    banner.textContent = 'All systems operational'
+  }
+}
+
+function renderIncidents(issues) {
+  const el = document.getElementById('incidents')
+  if (!issues.length) {
+    el.innerHTML = '<div class="empty">No incidents reported. Downtime is detected automatically and reported here within 5 minutes.</div>'
+    return
+  }
+  el.innerHTML = issues.map(issue => {
+    const open = issue.state === 'open'
+    const started = new Date(issue.created_at)
+    const ended = issue.closed_at ? new Date(issue.closed_at) : null
+    const range = ended
+      ? `${started.toUTCString().slice(0, 22)} UTC — resolved after ${Math.max(1, Math.round((ended - started) / 60000))} min`
+      : `${started.toUTCString().slice(0, 22)} UTC — ongoing`
+    return `
+    <div class="incident">
+      <div class="head">
+        <a href="${issue.html_url}">${issue.title}</a>
+        <span class="chip ${open ? 'open' : 'resolved'}">${open ? 'Investigating' : 'Resolved'}</span>
+      </div>
+      <div class="dates">${range}</div>
+    </div>`
+  }).join('')
+}
+
+async function main() {
+  try {
+    const sites = await (await fetch(`${RAW}/history/summary.json`, { cache: 'no-store' })).json()
+    renderBanner(sites)
+    document.getElementById('services').innerHTML = sites.map(renderService).join('')
+  } catch {
+    document.getElementById('banner').style.display = 'none'
+    document.getElementById('error').style.display = 'block'
+  }
+  try {
+    const issues = await (await fetch(
+      `https://api.github.com/repos/${REPO}/issues?state=all&labels=status&per_page=15`
+    )).json()
+    renderIncidents(Array.isArray(issues) ? issues : [])
+  } catch {
+    document.getElementById('incidents').innerHTML =
+      `<div class="empty">Incident list unavailable — see <a href="https://github.com/${REPO}/issues">GitHub issues</a>.</div>`
+  }
+}
+main()
+</script>
+</body>
+</html>
