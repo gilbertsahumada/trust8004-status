@@ -1,31 +1,33 @@
-# Change these first
-owner: upptime # Your GitHub organization or username, where this repository lives
-repo: upptime # The name of this repository
+owner: gilbertsahumada
+repo: trust8004-status
 
 sites:
-  - name: Google
-    url: https://www.google.com
-  - name: Wikipedia
-    url: https://en.wikipedia.org
-  - name: Hacker News
-    url: https://news.ycombinator.com
-  - name: Secret Site
-    url: $SECRET_SITE
+  - name: Website
+    url: https://trust8004.xyz
+  - name: API Health
+    url: https://trust8004.xyz/api/health
+  - name: Paid API (x402)
+    url: https://trust8004.xyz/openapi.json
+  - name: Public API
+    url: https://trust8004.xyz/api/v2/agents?limit=1
+
+assignees:
+  - gilbertsahumada
 
 status-website:
-  # Add your custom domain name, or remove the `cname` line if you don't have a domain
-  # Uncomment the `baseUrl` line if you don't have a custom domain and add your repo name there
-  cname: demo.upptime.js.org
-  # baseUrl: /your-repo-name
-  logoUrl: https://raw.githubusercontent.com/upptime/upptime.js.org/master/static/img/icon.svg
-  name: Upptime
-  introTitle: "**Upptime** is the open-source uptime monitor and status page, powered entirely by GitHub."
-  introMessage: This is a sample status page which uses **real-time** data from our [GitHub repository](https://github.com/upptime/upptime). No server required — just GitHub Actions, Issues, and Pages. [**Get your own for free**](https://github.com/upptime/upptime)
+  # Switch to `cname: status.trust8004.xyz` once the DNS CNAME exists
+  baseUrl: /trust8004-status
+  name: trust8004 Status
+  introTitle: "**trust8004** service status"
+  introMessage: Real-time uptime and response times for [trust8004.xyz](https://trust8004.xyz) — the ERC-8004 agent trust and reputation index — and its APIs, including the x402 USDC pay-per-call API.
   navbar:
     - title: Status
       href: /
+    - title: trust8004.xyz
+      href: https://trust8004.xyz
+    - title: API docs
+      href: https://trust8004.xyz/docs/paid-api.md
     - title: GitHub
       href: https://github.com/$OWNER/$REPO
 
-# Upptime also supports notifications, assigning issues, and more
-# See https://upptime.js.org/docs/configuration
+# Notifications, custom checks and more: https://upptime.js.org/docs/configuration
